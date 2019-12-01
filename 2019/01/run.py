@@ -35,11 +35,6 @@ input), then add together all the fuel values.
 What is the sum of the fuel requirements for all of the modules on your
 spacecraft?
 
-Solution part 1::
-
-    >>> solution_01_1()
-    3563458
-
 --- Part Two ---
 
 During the second Go / No Go poll, the Elf in charge of the Rocket Equation
@@ -71,39 +66,29 @@ What is the sum of the fuel requirements for all of the modules on your
 spacecraft when also taking into account the mass of the added fuel? (Calculate
 the fuel requirements for each module separately, then add them all up at the
 end.)
-
-Solution part 2::
-
-    >>> solution_01_2()
-    5342292
 """
-import os
 import numpy
 
-CURDIR = os.path.dirname(os.path.abspath(__file__))
+MODULE_MASSES = numpy.fromfile("input", sep="\n", dtype=int)
 
 
-def read_data():
-    with open(f"{CURDIR}/input") as src:
-        return numpy.array(src.read().split(), dtype=int)
-
-
-def solution_01_1():
-    module_masses = read_data()
-    fuel_requirements = numpy.sum(module_masses//3-2)
+def part1():
+    fuel_requirements = numpy.sum(MODULE_MASSES//3-2)
     return fuel_requirements
 
 
-def solution_01_2():
-    module_masses = read_data()
+def part2():
     fuel_requirements = 0
-    while module_masses.size:
-        module_masses = module_masses//3-2
-        module_masses = module_masses[module_masses > 0]
-        fuel_requirements += numpy.sum(module_masses)
+    masses = MODULE_MASSES.copy()
+    while masses.size:
+        masses = masses//3-2
+        masses = masses[masses > 0]
+        fuel_requirements += numpy.sum(masses)
     return fuel_requirements
 
 
 if __name__ == "__main__":
-    print("solution part 1:", solution_01_1())
-    print("solution part 2:", solution_01_2())
+    print("solution part 1:", part1())
+    # solution part 1: 3563458
+    print("solution part 2:", part2())
+    # solution part 2: 5342292
