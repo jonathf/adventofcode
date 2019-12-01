@@ -82,17 +82,15 @@ What is the first frequency your device reaches twice?
 from itertools import cycle
 import numpy
 
-FREQUENCY_CHANGES = numpy.fromfile("input", sep="\n", dtype=int)
+
+def part1(frequency_changes: numpy.ndarray) -> int:
+    return frequency_changes.sum()
 
 
-def part1():
-    return FREQUENCY_CHANGES.sum()
-
-
-def part2():
+def part2(frequency_changes: numpy.ndarray) -> int:
     observed = {0}
     frequency = 0
-    for change in cycle(FREQUENCY_CHANGES):
+    for change in cycle(frequency_changes):
         frequency += change
         if frequency in observed:
             return frequency
@@ -100,7 +98,8 @@ def part2():
 
 
 if __name__ == "__main__":
-    print("solution part 1:", part1())
+    FREQUENCY_CHANGES = numpy.fromfile("input", sep="\n", dtype=int)
+    print("solution part 1:", part1(FREQUENCY_CHANGES))
     # solution part 1: 400
-    print("solution part 2:", part2())
+    print("solution part 2:", part2(FREQUENCY_CHANGES))
     # solution part 2: 232

@@ -69,18 +69,15 @@ end.)
 """
 import numpy
 
-MODULE_MASSES = numpy.fromfile("input", sep="\n", dtype=int)
+
+def part1(module_masses: numpy.ndarray):
+    return numpy.sum(module_masses//3-2)
 
 
-def part1():
-    fuel_requirements = numpy.sum(MODULE_MASSES//3-2)
-    return fuel_requirements
-
-
-def part2():
+def part2(module_masses: numpy.ndarray):
     fuel_requirements = 0
-    masses = MODULE_MASSES.copy()
-    while masses.size:
+    masses = module_masses.copy()
+    while module_masses.size:
         masses = masses//3-2
         masses = masses[masses > 0]
         fuel_requirements += numpy.sum(masses)
@@ -88,7 +85,8 @@ def part2():
 
 
 if __name__ == "__main__":
-    print("solution part 1:", part1())
+    MODULE_MASSES = numpy.fromfile("input", sep="\n", dtype=int)
+    print("solution part 1:", part1(MODULE_MASSES))
     # solution part 1: 3563458
-    print("solution part 2:", part2())
+    print("solution part 2:", part2(MODULE_MASSES))
     # solution part 2: 5342292
