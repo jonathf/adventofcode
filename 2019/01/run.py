@@ -77,7 +77,7 @@ def part1(module_masses: numpy.ndarray):
 def part2(module_masses: numpy.ndarray):
     fuel_requirements = 0
     masses = module_masses.copy()
-    while module_masses.size:
+    while masses.size:
         masses = masses//3-2
         masses = masses[masses > 0]
         fuel_requirements += numpy.sum(masses)
