@@ -79,15 +79,17 @@ Here are other examples:
 
 What is the first frequency your device reaches twice?
 """
+from typing import List
 from itertools import cycle
+
 import numpy
 
 
-def part1(frequency_changes: numpy.ndarray) -> int:
-    return frequency_changes.sum()
+def part1(frequency_changes: List[int]) -> int:
+    return sum(frequency_changes)
 
 
-def part2(frequency_changes: numpy.ndarray) -> int:
+def part2(frequency_changes: List[int]) -> int:
     observed = {0}
     frequency = 0
     for change in cycle(frequency_changes):
@@ -98,7 +100,7 @@ def part2(frequency_changes: numpy.ndarray) -> int:
 
 
 if __name__ == "__main__":
-    FREQUENCY_CHANGES = numpy.fromfile("input", sep="\n", dtype=int)
+    FREQUENCY_CHANGES = numpy.fromfile("input", sep="\n", dtype=int).tolist()
     print("solution part 1:", part1(FREQUENCY_CHANGES))
     # solution part 1: 400
     print("solution part 2:", part2(FREQUENCY_CHANGES))

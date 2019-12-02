@@ -14,10 +14,12 @@ suit. All claims have an ID and consist of a single rectangle with edges
 parallel to the edges of the fabric. Each claim's rectangle is defined as
 follows:
 
-    The number of inches between the left edge of the fabric and the left edge of the rectangle.
-    The number of inches between the top edge of the fabric and the top edge of the rectangle.
-    The width of the rectangle in inches.
-    The height of the rectangle in inches.
+* The number of inches between the left edge of the fabric and the left edge of
+  the rectangle.
+* The number of inches between the top edge of the fabric and the top edge of
+  the rectangle.
+* The width of the rectangle in inches.
+* The height of the rectangle in inches.
 
 A claim like #123 @ 3,2: 5x4 means that claim ID 123 specifies a rectangle
 3 inches from the left edge, 2 inches from the top edge, 5 inches wide, and
@@ -70,48 +72,89 @@ made.
 
 What is the ID of the only claim that doesn't overlap?
 """
-from typing import Iterator, Tuple
+from typing import Iterator, List, Tuple
 import re
+
 import numpy
+import pandas
 
 
-def rectangles(
-    claims: List[Tuple[str, str, str, str, str]],
-) -> Iterator[Tuple[int, slice, slice]]:
-    claims = numpy.array(claims, dtype=int)
-    for index, x_coor, y_coor, width, hight in claims:
-        x_slice = slice(x_coor, x_coor+width)
-        y_slice = slice(y_coor, y_coor+hight)
-        yield index, x_slice, y_slice
+def create_fabric_grid(claims: pandas.DataFrame) -> numpy.ndarray:
+    """
+    Construct grid indicating how many patches overlap a give grid point by
+    index.
 
+    Args:
+        claims:
+            Frame with the following columns:
 
-def create_fabric_grid(
-    claims: List[Tuple[str, str, str, str, str]],
-) -> numpy.ndarray:
-    fabric_grid = numpy.zeros((1000, 1000), dtype=int)
-    for _, *coordinates in rectangles(claims):
-        fabric_grid[coordinates] += 1
+            claim_id:
+                Identifier for the specific claim.
+            x_start:
+                Index of the left edge.
+            x_stop:
+                Index of the right edge.
+            y_start:
+                Index of the top edge.
+            y_stop:
+                Index of the bottom edge.
+
+    Returns:
+        2-dimensional numpy array where indices represents coordinates, and
+        values represents the number of patches overlap a position.
+
+    Examples:
+        >>> claims = pandas.DataFrame({"claim_id": [1, 2, 3],
+        ...                            "x_start": [1, 3, 5],
+        ...                            "x_stop": [5, 7, 7],
+        ...                            "y_start": [3, 1, 5],
+        ...                            "y_stop": [7, 5, 7]})
+        >>> create_fabric_grid(claims)
+        array([[0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 1, 1, 1, 1],
+               [0, 0, 0, 1, 1, 1, 1],
+               [0, 1, 1, 2, 2, 1, 1],
+               [0, 1, 1, 2, 2, 1, 1],
+               [0, 1, 1, 1, 1, 1, 1],
+               [0, 1, 1, 1, 1, 1, 1]])
+
+    """
+    fabric_grid = numpy.zeros((claims.x_stop.max(), claims.y_stop.max()), dtype=int)
+    for _, index in iterate_patches(claims):
+        fabric_grid[index] += 1
     return fabric_grid
 
 
-def part1(fabric_grid: numpy.ndarray) -> int:
+def iterate_patches(claims: pandas.DataFrame) -> Iterator[Tuple[int, Tuple[slice, slice]]]:
+    for _, claim in claims.iterrows():
+        index = (slice(claim.x_start, claim.x_stop),
+                 slice(claim.y_start, claim.y_stop))
+        yield claim.claim_id, index
+
+
+def part1(claims: pandas.DataFrame) -> int:
+    fabric_grid = create_fabric_grid(claims)
     return numpy.sum(fabric_grid > 1)
 
 
-def part2(
-    claims: List[Tuple[str, str, str, str, str]],
-    fabric_grid: numpy.ndarray,
-) -> int:
-    for index, *coordinates in rectangles(claims):
-        if numpy.all(fabric_grid[coordinates] == 1):
-            return index
+def part2(claims: pandas.DataFrame) -> int:
+    fabric_grid = create_fabric_grid(claims)
+    for caim_id, index in iterate_patches(claims):
+        if numpy.all(fabric_grid[index] == 1):
+            return claim_id
 
 
 if __name__ == "__main__":
     with open("input") as src:
         CLAIMS = re.findall(r"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)", src.read())
-    FABRIC_GRID = create_fabric_grid(CLAIMS)
-    print("solution part 1:", part1(FABRIC_GRID))
+    CLAIMS = pandas.DataFrame(
+        numpy.array(CLAIMS, dtype=int),
+        columns=["claim_id", "x_start", "y_start", "width", "height"],
+    )
+    CLAIMS["x_stop"] = CLAIMS.x_start + CLAIMS.width
+    CLAIMS["y_stop"] = CLAIMS.y_start + CLAIMS.height
+
+    print("solution part 1:", part1(CLAIMS))
     # solution part 1: 108961
-    print("solution part 2:", part2(CLAIMS, FABRIC_GRID))
+    print("solution part 2:", part2(CLAIMS))
     # solution part 2: 681

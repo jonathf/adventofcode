@@ -73,6 +73,33 @@ from collections import defaultdict
 import numpy
 
 
+def create_match_count_matrix(box_ids: List[str]) -> numpy.ndarray:
+    """
+    Construct a (N x N) matrix with how many characters in each box-ID matches
+    with other box-IDs.
+
+    To ensure that match count selects pairs consisting of the same word twice,
+    the diagonal of the matrix is removed.
+
+    Examples:
+        >>> create_match_count_matrix(["abb", "bbb", "bbb", "bcc"])
+        array([[0, 2, 2, 0],
+               [2, 0, 3, 1],
+               [2, 3, 0, 1],
+               [0, 1, 1, 0]])
+    """
+    # convert to matrix of characters
+    char_matrix = numpy.array(box_ids).view("U1").reshape(len(box_ids), -1)
+    # count up characters in the same column that are the same
+    matches = numpy.zeros((len(box_ids), len(box_ids)), dtype=int)
+    for column in char_matrix.T:
+        # all against all compare of character
+        matches += column.reshape(1, -1) == column.reshape(-1, 1)
+    # remove self matching
+    matches -= numpy.diag(numpy.diag(matches))
+    return matches
+
+
 def part1(box_ids: List[str]) -> int:
     doubles = triplets = 0
     for box_id in box_ids:
@@ -84,25 +111,12 @@ def part1(box_ids: List[str]) -> int:
     return doubles*triplets
 
 
-def create_match_count_matrix(box_ids: List[str]) -> numpy.ndarray:
-    # convert to matrix of characters
-    char_matrix = numpy.array(box_ids).view("U1").reshape(len(box_ids), -1)
-    # count up characters in the same column that are the same
-    matches = numpy.zeros((len(box_ids), len(box_ids)), dtype=int)
-    for column in char_matrix.T:
-        # all against all compare of character
-        matches += column.reshape(1, -1) == column.reshape(-1, 1)
-    # remove self matching
-    matches -= 99999*numpy.eye(len(matches), dtype=int)
-    return matches
-
-
 def part2(box_ids: List[str]) -> str:
     matches = create_match_count_matrix(box_ids)
-    word_index = numpy.argmax(matches) % len(matches)
-    char_index = numpy.argmax(matches[:, word_index])
-    prefix = words[word_index][:char_index]
-    suffix = words[word_index][char_index+1:]
+    index = numpy.argmax(matches)
+    word_index, char_index = index % len(matches), index // len(matches)
+    prefix = box_ids[word_index][:char_index]
+    suffix = box_ids[word_index][char_index+1:]
     return prefix+suffix
 
 
