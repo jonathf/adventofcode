@@ -70,11 +70,13 @@ end.)
 import numpy
 
 
-def part1(module_masses: numpy.ndarray):
+def part1(module_masses: numpy.ndarray) -> int:
+    """Do part 1 of the assignment."""
     return numpy.sum(module_masses//3-2)
 
 
-def part2(module_masses: numpy.ndarray):
+def part2(module_masses: numpy.ndarray) -> int:
+    """Do part 2 of the assignment."""
     fuel_requirements = 0
     masses = module_masses.copy()
     while masses.size:

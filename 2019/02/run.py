@@ -141,26 +141,51 @@ OPERATORS = {1: add, 2: mul}
 
 
 def run_program(noun: int, verb: int, program: List[int]) -> int:
+    """
+    Execute Intcode program.
+
+    Args:
+        noun:
+            The noun of the program. Used to replace position 1 in `program`.
+        verb:
+            The verb of the program. Used to replace position 2 in `program`.
+        program:
+            The Intcode program to execute.
+
+    Returns:
+        The return number of the program, gathered from position 0 in `program`
+        after execution.
+
+    Examples:
+        >>> run_program(0, 0, [1,0,0,0,99])
+        2
+        >>> run_program(1, 1, [1,1,1,4,99,5,6,0,99])
+        30
+    """
     program[1:3] = noun, verb
     for index in range(0, len(program), 4):
         try:
-            op_code, noun, verb, output = program[index:index+4]
-            operator = OPERATORS[op_code]
-        except (KeyError, TypeError):
-            assert program[index] == 99, "end of program assumed"
-            return program[0]
+            opcode, noun, verb, output = program[index:index+4]
+            operator = OPERATORS[opcode]
+        except (KeyError, ValueError):
+            break
         program[output] = operator(program[noun], program[verb])
+    assert program[index] == 99, "program did not terminate correctly"
+    return program[0]
 
 
 def part1(program: List[int]) -> int:
+    """Do part 1 of the assignment."""
     return run_program(12, 2, program[:])
 
 
 def part2(program: List[int]) -> int:
+    """Do part 2 of the assignment."""
+    noun = verb = 0
     for noun, verb in product(range(100), range(100)):
-        value0 = run_program(noun, verb, program[:])
-        if value0 == 19690720:
-            return 100*noun+verb
+        if run_program(noun, verb, program[:]) == 19690720:
+            break
+    return 100*noun+verb
 
 
 if __name__ == "__main__":
