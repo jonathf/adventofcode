@@ -170,7 +170,6 @@ def run_program(noun: int, verb: int, program: List[int]) -> int:
         except (KeyError, ValueError):
             break
         program[output] = operator(program[noun], program[verb])
-    assert program[index] == 99, "program did not terminate correctly"
     return program[0]
 
 

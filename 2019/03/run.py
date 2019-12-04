@@ -103,15 +103,15 @@ What is the fewest combined steps the wires must take to reach an intersection?
 from typing import Dict, List, Tuple
 from collections import defaultdict
 
-WALK_STEPS = {
+WALK_ALONG_PATH = {
     "L": lambda x_coor, y_coor, steps: (
-        (x_, y_coor) for x_ in range(x_coor-1, x_coor-steps-1, -1)),
+        (x, y_coor) for x in range(x_coor-1, x_coor-steps-1, -1)),
     "R": lambda x_coor, y_coor, steps: (
-        (x_, y_coor) for x_ in range(x_coor+1, x_coor+steps+1)),
+        (x, y_coor) for x in range(x_coor+1, x_coor+steps+1)),
     "U": lambda x_coor, y_coor, steps: (
-        (x_coor, y_) for y_ in range(y_coor+1, y_coor+steps+1)),
+        (x_coor, y) for y in range(y_coor+1, y_coor+steps+1)),
     "D": lambda x_coor, y_coor, steps: (
-        (x_coor, y_) for y_ in range(y_coor-1, y_coor-steps-1, -1)),
+        (x_coor, y) for y in range(y_coor-1, y_coor-steps-1, -1)),
 }
 
 
@@ -139,13 +139,14 @@ def create_path(line: str) -> Dict[Tuple[int, int], List[int]]:
          (3, 2): [21]}
     """
     grid = defaultdict(list)
-    x_coor = y_coor = step = 0
+    step = 0
+    coordinates = (0, 0)
     for move in line.split(","):
         direction, steps = move[0], int(move[1:])
-        walker = WALK_STEPS[direction]
-        for step, (x_coor, y_coor) in enumerate(
-                walker(x_coor, y_coor, steps), start=step+1):
-            grid[x_coor, y_coor].append(step)
+        walker = WALK_ALONG_PATH[direction]
+        for step, coordinates in enumerate(
+                walker(*coordinates, steps=steps), start=step+1):
+            grid[coordinates].append(step)
     return dict(grid)
 
 
