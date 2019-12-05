@@ -101,6 +101,7 @@ def create_match_count_matrix(box_ids: List[str]) -> numpy.ndarray:
 
 
 def part1(box_ids: List[str]) -> int:
+    """Do part 1 of the assignment."""
     doubles = triplets = 0
     for box_id in box_ids:
         char_counts = defaultdict(int)
@@ -112,6 +113,7 @@ def part1(box_ids: List[str]) -> int:
 
 
 def part2(box_ids: List[str]) -> str:
+    """Do part 2 of the assignment."""
     matches = create_match_count_matrix(box_ids)
     index = numpy.argmax(matches)
     word_index, char_index = index % len(matches), index // len(matches)

@@ -86,10 +86,12 @@ import numpy
 
 
 def part1(frequency_changes: List[int]) -> int:
+    """Do part 1 of the assignment."""
     return sum(frequency_changes)
 
 
 def part2(frequency_changes: List[int]) -> int:
+    """Do part 2 of the assignment."""
     observed = {0}
     frequency = 0
     for change in cycle(frequency_changes):

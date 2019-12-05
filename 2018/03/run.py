@@ -72,7 +72,7 @@ made.
 
 What is the ID of the only claim that doesn't overlap?
 """
-from typing import Iterator, List, Tuple
+from typing import Iterator, Tuple
 import re
 
 import numpy
@@ -125,7 +125,10 @@ def create_fabric_grid(claims: pandas.DataFrame) -> numpy.ndarray:
     return fabric_grid
 
 
-def iterate_patches(claims: pandas.DataFrame) -> Iterator[Tuple[int, Tuple[slice, slice]]]:
+def iterate_patches(
+    claims: pandas.DataFrame,
+) -> Iterator[Tuple[int, Tuple[slice, slice]]]:
+    """Iterate slices that covers each patch."""
     for _, claim in claims.iterrows():
         index = (slice(claim.x_start, claim.x_stop),
                  slice(claim.y_start, claim.y_stop))
@@ -133,11 +136,13 @@ def iterate_patches(claims: pandas.DataFrame) -> Iterator[Tuple[int, Tuple[slice
 
 
 def part1(claims: pandas.DataFrame) -> int:
+    """Do part 1 of the assignment."""
     fabric_grid = create_fabric_grid(claims)
     return numpy.sum(fabric_grid > 1)
 
 
 def part2(claims: pandas.DataFrame) -> int:
+    """Do part 2 of the assignment."""
     fabric_grid = create_fabric_grid(claims)
     for caim_id, index in iterate_patches(claims):
         if numpy.all(fabric_grid[index] == 1):
