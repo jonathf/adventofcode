@@ -224,13 +224,28 @@ def find_santa(name: str, graph: Dict[str, List[str]]) -> Tuple[str, int]:
     return status, count
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
 
     GRAPH = defaultdict(list)
     with open("input") as src:
-        for LINE in src.read().strip().split():
-            CENTER, PERIPHERY = LINE.split(")")
-            GRAPH[CENTER].append(PERIPHERY)
+        for line in src.read().strip().split():
+            center, periphery = line.split(")")
+            graph[center].append(periphery)
 
     print("solution part 1:", count_orbits("COM", GRAPH))
     # solution part 1: 117672
