@@ -224,21 +224,6 @@ def find_santa(name: str, graph: Dict[str, List[str]]) -> Tuple[str, int]:
     return status, count
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
 
     GRAPH = defaultdict(list)
